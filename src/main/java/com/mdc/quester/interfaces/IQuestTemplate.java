@@ -1,5 +1,9 @@
 package com.mdc.quester.interfaces;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 /**
  * Created by Alex on 6/11/2017.
  */
@@ -24,4 +28,10 @@ public interface IQuestTemplate<T> {
      * @return This will return the page that is implementing {@link IQuestPageTemplate}
      */
     IQuestPageTemplate<?> getPage();
+
+    /**
+     *
+     * @return what triggers this quest
+     */
+    boolean triggered(EntityPlayer player, World world, BlockPos pos);
 }
