@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "modid": "quester",
+  "name": "Quester",
+  "description": "A modding API dependency for creating quests.",
+  "version": "1.0",
+  "mcversion": "1.11, 1.12",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Alex Couch"],
+  "credits": "Alex Couch for making this in the first place.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

@@ -1,4 +1,4 @@
-package com.mdc.quester;
+package com.mdc.quester.examples;
 
 import com.mdc.quester.interfaces.IQuestPageTemplate;
 

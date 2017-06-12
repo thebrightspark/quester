@@ -17,11 +17,10 @@ public interface IQuestTemplate<T> {
     }
 
     /**
-     * When you register a quest and set an id for the quest, this method can be used to separate different id's.
-     * I might make it so that you can register multiple quests under the same quest id (metaquests)
-     * @return the id of the quest
+     * When you register a quest and set a name for the quest, this method can be used to separate different names.
+     * @return the name of the quest
      */
-    int getId();
+    String getName();
 
     /**
      * This method is used to get the page that the quest is registered to.

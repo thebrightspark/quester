@@ -6,9 +6,9 @@ import com.mdc.quester.interfaces.IQuestTemplate;
 import java.util.*;
 
 public class QuestData {
-    private static int questId;
     private static Map<String, IQuestTemplate> quests = new HashMap<>();
     private static Map<String, IQuestPageTemplate> pages  = new HashMap<>();
+    private static Set<IQuestTemplate> completedQuests = new HashSet<>();
 
     public static IQuestTemplate<?> getQuestTemplate(){
         for(IQuestTemplate quest : quests.values()){
@@ -32,11 +32,7 @@ public class QuestData {
         pages.put(name, template);
     }
 
-    static void setQuestId(int id){
-        questId = id;
-    }
-
-    public static int getQuestId(){
-        return questId;
+    public static Set<IQuestTemplate> getCompletedQuests(){
+        return completedQuests;
     }
 }
