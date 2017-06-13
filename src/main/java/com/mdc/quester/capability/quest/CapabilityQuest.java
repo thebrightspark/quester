@@ -17,15 +17,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class CapabilityQuest implements ICapQuests{
     private static final String KEY_QUESTS = "quests";
     private EntityPlayer player;
+    private static Set<IQuestTemplate> questsCompleted = new HashSet<>();
 
     @Override
     public Set<IQuestTemplate> completedQuest() {
-        return QuestData.getCompletedQuests();
+        return questsCompleted;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class CapabilityQuest implements ICapQuests{
 
     @Override
     public void addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player) {
-        QuestHelper.setCompletedQuest(quest, player, true);
+        questsCompleted.add(quest);
         dataChanged(player);
     }
 
