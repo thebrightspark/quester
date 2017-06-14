@@ -13,27 +13,17 @@ public class QuestHelper {
 
     private static IQuestTemplate getLastCompletedQuest;
 
-    public static void setCompletedQuest(IQuestTemplate quest, EntityPlayer player, boolean completed){
+    public static void setCompletedQuest(IQuestTemplate quest, EntityPlayerMP player, boolean completed){
         if(completed) {
             getLastCompletedQuest = quest;
             if(!player.hasCapability(QuesterCapability.QUESTS, null)) return;
             ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
             if(icap == null) return;
-            icap.addCompletedQuest(quest, (EntityPlayerMP)player);
+            icap.addCompletedQuest(quest, player);
         }
     }
 
     public static IQuestTemplate getCompletedQuest(){
         return getLastCompletedQuest;
-    }
-
-    public static boolean isQuestCompleted(IQuestTemplate quest, EntityPlayer player){
-        if(!player.hasCapability(QuesterCapability.QUESTS, null)) return false;
-        ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
-        if(icap == null) return false;
-        for(IQuestTemplate completedQuest : icap.completedQuest()){
-            return completedQuest.getName().equalsIgnoreCase(quest.getName());
-        }
-        return false;
     }
 }

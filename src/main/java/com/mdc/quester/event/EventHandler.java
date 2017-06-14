@@ -6,6 +6,7 @@ import com.mdc.quester.capability.quest.ICapQuests;
 import com.mdc.quester.interfaces.IQuestTemplate;
 import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.quests.QuestHelper;
+import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.registry.QuestRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,8 +26,6 @@ import org.apache.logging.log4j.Level;
 @Mod.EventBusSubscriber
 public class EventHandler {
 
-    public static boolean smelted = false;
-
     @SubscribeEvent
     public static void addCapability(AttachCapabilitiesEvent<Entity> event){
         Entity entity = event.getObject();
@@ -44,28 +43,21 @@ public class EventHandler {
     @SubscribeEvent
     public static void tickQuests(TickEvent.PlayerTickEvent event){
         if(event.player.world.isRemote) return;
-        EntityPlayer player = event.player;
-        World world = player.world;
-        BlockPos pos = player.getPosition();
-        for(IQuestTemplate quest : QuestRegistry.quests) {
-            ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
-            if(icap == null) continue;
-            icap.setPlayer(player);
-            if (!icap.hasCompletedQuest(quest, player) && quest.triggered(player, world, pos)) {
-                QuestHelper.setCompletedQuest(quest, player, true);
-                icap.addCompletedQuest(quest, (EntityPlayerMP)player);
-                player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
-            }else if(icap.hasCompletedQuest(quest, player) && quest.triggered(player, world, pos)){
-                return;
+        if(event.player instanceof EntityPlayerMP) {
+            EntityPlayerMP player = (EntityPlayerMP) event.player;
+            World world = player.world;
+            BlockPos pos = player.getPosition();
+            for (IQuestTemplate quest : QuestData.quests.values()) {
+                ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
+                if (icap == null) continue;
+                icap.setPlayer(player);
+                if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
+                    QuestHelper.setCompletedQuest(quest, player, true);
+                    player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
+                } else if (icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
+                    return;
+                }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void itemSmelted(PlayerEvent.ItemSmeltedEvent event){
-        if(event.player.world.isRemote) return;
-        if(event.smelting.getItem() == Items.IRON_INGOT){
-            smelted = true;
         }
     }
 }

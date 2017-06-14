@@ -9,11 +9,11 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import java.util.Set;
 
 public interface ICapQuests extends ICapability {
-    Set<IQuestTemplate> completedQuest();
+    Set<IQuestTemplate> getCompletedQuests();
 
-    boolean hasCompletedQuest(IQuestTemplate quest, EntityPlayer player);
+    boolean hasCompletedQuest(IQuestTemplate quest);
 
-    void addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player);
+    boolean addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player);
 
-    void setPlayer(EntityPlayer player);
+    void setPlayer(EntityPlayerMP player);
 }

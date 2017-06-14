@@ -4,6 +4,7 @@ import com.mdc.quester.command.CommandQuesterBase;
 import com.mdc.quester.handler.NetworkHandler;
 import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.registry.QuestRegistry;
+import com.mdc.test.QuestProxy;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 public class CommonProxy {
@@ -13,7 +14,7 @@ public class CommonProxy {
     }
 
     public void init(){
-
+        QuestProxy.init();
     }
 
     public void postInit(){}
