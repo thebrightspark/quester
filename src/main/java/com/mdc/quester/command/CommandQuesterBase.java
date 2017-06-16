@@ -1,17 +1,17 @@
 package com.mdc.quester.command;
 
 import com.mdc.quester.capability.quest.ICapQuests;
-import com.mdc.quester.interfaces.IQuestTemplate;
+import com.mdc.quester.registry.QuestData;
+import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.player.QuesterCapability;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-
-import java.util.Set;
 
 public class CommandQuesterBase extends CommandBase{
     @Override
@@ -38,11 +38,16 @@ public class CommandQuesterBase extends CommandBase{
 
     private void resetQuests(ICommandSender sender){
         if(sender.getCommandSenderEntity() instanceof EntityPlayer){
-            EntityPlayer player = (EntityPlayer)sender.getCommandSenderEntity();
+            EntityPlayerMP player = (EntityPlayerMP)sender.getCommandSenderEntity();
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                icap.getCompletedQuests().clear();
+                icap.clearSet(icap.getCompletedQuests());
+                QuestData.clearSet(QuestData.getCompletedQuests());
+                for(IQuestTemplate quest : QuestData.quests.values()){
+                    icap.addIncompletedQuest(quest, player);
+                    QuestData.setIncompletedQuest(quest);
+                }
             }
         }
     }

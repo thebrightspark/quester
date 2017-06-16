@@ -1,6 +1,6 @@
 package com.mdc.test;
 
-import com.mdc.quester.interfaces.IQuestTemplate;
+import com.mdc.quester.templates.IQuestTemplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;

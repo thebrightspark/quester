@@ -3,13 +3,10 @@ package com.mdc.quester.capability.quest;
 import com.mdc.quester.Quester;
 import com.mdc.quester.capability.CapabilityProvider;
 import com.mdc.quester.handler.NetworkHandler;
-import com.mdc.quester.interfaces.IQuestTemplate;
+import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.messages.MessageCapability;
 import com.mdc.quester.player.QuesterCapability;
-import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
-import com.mdc.quester.registry.QuestRegistry;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -18,12 +15,16 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class CapabilityQuest implements ICapQuests{
     private static final String KEY_QUESTS = "quests";
+    private static final String KEY_QUEST_COMPLETE = "completed_quests";
+    private static final String KEY_QUEST_UNCOMPLETE = "uncomplete_quests";
     private EntityPlayerMP player;
     private static Set<IQuestTemplate> questsCompleted = new HashSet<>();
+    private static Set<IQuestTemplate> questsIncompleted = new HashSet<>();
 
     @Override
     public Set<IQuestTemplate> getCompletedQuests() {
@@ -44,6 +45,32 @@ public class CapabilityQuest implements ICapQuests{
     }
 
     @Override
+    public void clearSet(Set<IQuestTemplate> list) {
+        list.clear();
+    }
+
+    @Override
+    public boolean addIncompletedQuest(IQuestTemplate quest, EntityPlayerMP player) {
+        if(questsIncompleted.size() == 0){
+            questsIncompleted.add(quest);
+            QuestData.setIncompletedQuest(quest);
+            dataChanged(player);
+            return true;
+        }else{
+            for(IQuestTemplate q : questsIncompleted){
+                if(!q.getName().equals(quest.getName())){
+                    questsIncompleted.add(quest);
+                    QuestData.setIncompletedQuest(quest);
+                    dataChanged(player);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player){
         if(questsCompleted.size() == 0){
             questsCompleted.add(quest);
@@ -51,9 +78,10 @@ public class CapabilityQuest implements ICapQuests{
             return true;
         }else {
             for (IQuestTemplate q : questsCompleted) {
-                if (q.getName().equalsIgnoreCase(quest.getName())) {
+                if (!q.getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
+                    questsCompleted.add(quest);
                     dataChanged(player);
-                    return !hasCompletedQuest(quest) && questsCompleted.add(quest);
+                    return true;
                 }
             }
         }
@@ -78,19 +106,17 @@ public class CapabilityQuest implements ICapQuests{
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound nbt = new NBTTagCompound();
-        for(IQuestTemplate quest : questsCompleted){
-            if(nbt.hasKey(KEY_QUESTS)){
-                NBTTagList taglist = nbt.getTagList(KEY_QUESTS, Constants.NBT.TAG_COMPOUND);
-                NBTTagCompound tag = new NBTTagCompound();
-                if(!tag.hasKey(KEY_QUESTS)){
-                    tag.setString(KEY_QUESTS, quest.getName());
-                }
-                taglist.appendTag(tag);
-                nbt.setTag(KEY_QUESTS, taglist);
-            }else{
-                nbt.setString(KEY_QUESTS, quest.getName());
-
-            }
+        for(IQuestTemplate quest : QuestData.completedQuests){
+            NBTTagList taglist = nbt.getTagList(KEY_QUEST_COMPLETE, Constants.NBT.TAG_COMPOUND);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setString(KEY_QUEST_COMPLETE, quest.getName());
+            taglist.appendTag(tag);
+        }
+        for(IQuestTemplate quest : QuestData.uncompletedQuests){
+            NBTTagList taglist = nbt.getTagList(KEY_QUEST_UNCOMPLETE, Constants.NBT.TAG_COMPOUND);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setString(KEY_QUEST_UNCOMPLETE, quest.getName());
+            taglist.appendTag(tag);
         }
         return nbt;
     }
@@ -98,15 +124,10 @@ public class CapabilityQuest implements ICapQuests{
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
         if(nbt.hasKey(KEY_QUESTS)){
-            NBTTagList taglist = nbt.getTagList(KEY_QUESTS, Constants.NBT.TAG_COMPOUND);
-            for(int i = 0; i < taglist.tagCount(); i++) {
-                String name = taglist.getStringTagAt(i);
-                for(IQuestTemplate quest : QuestData.quests.values()){
-                    if(!quest.getName().equalsIgnoreCase(name)){
-                        IQuestTemplate questToAdd = QuestData.getQuestByName(name);
-                        addCompletedQuest(questToAdd, this.player);
-                    }
-                }
+            NBTTagList taglist = nbt.getTagList(KEY_QUEST_COMPLETE, Constants.NBT.TAG_COMPOUND);
+            for(int i = 0; i < taglist.tagCount();i++) {
+                IQuestTemplate quest = QuestData.getQuestByName(taglist.getStringTagAt(i));
+                questsCompleted.add(quest);
             }
         }
     }

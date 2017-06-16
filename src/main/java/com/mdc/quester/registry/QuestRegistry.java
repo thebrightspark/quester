@@ -1,10 +1,8 @@
 package com.mdc.quester.registry;
 
-import com.mdc.quester.interfaces.IQuestPageTemplate;
-import com.mdc.quester.interfaces.IQuestTemplate;
-
-import java.util.HashSet;
-import java.util.Set;
+import com.mdc.quester.Quester;
+import com.mdc.quester.templates.IQuestPageTemplate;
+import com.mdc.quester.templates.IQuestTemplate;
 
 public class QuestRegistry {
 

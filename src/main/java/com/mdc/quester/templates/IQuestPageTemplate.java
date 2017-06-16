@@ -1,4 +1,4 @@
-package com.mdc.quester.interfaces;
+package com.mdc.quester.templates;
 
 public interface IQuestPageTemplate<T> {
     default T getT(T t){

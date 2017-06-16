@@ -1,13 +1,15 @@
 package com.mdc.quester.registry;
 
-import com.mdc.quester.interfaces.IQuestPageTemplate;
-import com.mdc.quester.interfaces.IQuestTemplate;
+import com.mdc.quester.Quester;
+import com.mdc.quester.templates.IQuestPageTemplate;
+import com.mdc.quester.templates.IQuestTemplate;
 
 import java.util.*;
 
 public class QuestData {
     public static Map<String, IQuestTemplate> quests = new HashMap<>();
     public static Map<String, IQuestPageTemplate> pages  = new HashMap<>();
+    public static Set<IQuestTemplate> uncompletedQuests = new HashSet<>();
     public static Set<IQuestTemplate> completedQuests = new HashSet<>();
 
     public static IQuestTemplate<?> getQuestTemplate(){
@@ -33,8 +35,53 @@ public class QuestData {
         return null;
     }
 
+    public static void clearSet(Set<IQuestTemplate> set){
+        set.clear();
+    }
+
     static <T extends IQuestTemplate<T>> void setQuestTemplate(IQuestTemplate<T> template, String name){
-        quests.put(name, template);
+        Quester.LOGGER.info("Registering quests: ");
+        if(quests.size() == 0){
+            quests.put(name, template);
+            Quester.LOGGER.info("\t"+template.getName());
+        }else{
+            for(IQuestTemplate quest : quests.values()){
+                if(template.getName().equalsIgnoreCase(quest.getName())){
+                    throw new IllegalArgumentException("Cannot add quest as it is already added: " + template.getName() + " and " + quest.getName());
+                }
+                Quester.LOGGER.info("\t"+template.getName());
+                quests.put(name, template);
+            }
+        }
+    }
+
+    public static void setIncompletedQuest(IQuestTemplate quest){
+        Quester.LOGGER.info("Setting quests 'incomplete':");
+        if(uncompletedQuests.size() == 0){
+            uncompletedQuests.add(quest);
+            Quester.LOGGER.info("\t"+quest.getName());
+        }else{
+            for(IQuestTemplate q : uncompletedQuests){
+                if(quest.getName().equalsIgnoreCase(q.getName())){
+                    throw new IllegalArgumentException("Cannot add incomplete quest as it is already added to the set: " + quest.getName() + " and " + q.getName());
+                }
+                uncompletedQuests.add(quest);
+                Quester.LOGGER.info("\t"+quest.getName());
+            }
+        }
+    }
+
+    public static void setCompletedQuest(IQuestTemplate quest){
+        Quester.LOGGER.info("Setting quests 'complete':");
+        for(IQuestTemplate q : completedQuests){
+            if(quest.getName().equalsIgnoreCase(q.getName())){
+                throw new IllegalArgumentException("I don't know how you managed to do this but uhh... you are setting a quest complete that is already completed???");
+            }else{
+                Quester.LOGGER.info("\t"+quest.getName());
+                uncompletedQuests.remove(quest);
+                completedQuests.add(quest);
+            }
+        }
     }
 
     static <T extends IQuestPageTemplate<T>> void setQuestPageTemplate(IQuestPageTemplate<T> template, String name){

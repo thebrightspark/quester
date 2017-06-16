@@ -1,4 +1,4 @@
-package com.mdc.quester.interfaces;
+package com.mdc.quester.templates;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
