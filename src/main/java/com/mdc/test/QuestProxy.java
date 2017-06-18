@@ -6,5 +6,6 @@ public class QuestProxy {
     public static void init(){
         QuestRegistry.registerQuest(new QuestGetWood());
         QuestRegistry.registerQuest(new QuestGetPlanks());
+        QuestRegistry.registerQuest(new QuestResources());
     }
 }
