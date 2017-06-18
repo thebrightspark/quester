@@ -32,6 +32,7 @@ public class EventHandler {
                 ICapability icap = capability.getDefaultInstance();
                 if(!player.hasCapability(QuesterCapability.QUESTS, null)){
                     event.addCapability(icap.getKey(), icap.getProvider());
+                    Quester.LOGGER.info("Quest capability added!");
                 }
             }
         }
@@ -48,14 +49,9 @@ public class EventHandler {
             if(icap == null) return;
             for(IQuestTemplate quest : QuestData.quests.values()){
                 if(!icap.hasCompletedQuest(quest)){
-                    for(IQuestTemplate q : QuestData.uncompletedQuests){
-                        if(q.getName().equals(quest.getName())){
-                            return;
-                        }else {
-                            QuestData.setIncompletedQuest(quest);
-                            icap.addIncompletedQuest(quest, player);
-                        }
-                    }
+                    icap.addIncompletedQuest(quest, player);
+                }else{
+                    icap.addCompletedQuest(quest, player);
                 }
             }
         }
@@ -68,7 +64,7 @@ public class EventHandler {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             World world = player.world;
             BlockPos pos = player.getPosition();
-            for (IQuestTemplate quest : QuestData.uncompletedQuests) {
+            for (IQuestTemplate quest : QuestData.incompletedQuests) {
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if (icap == null) continue;
                 icap.setPlayer(player);
@@ -76,8 +72,6 @@ public class EventHandler {
                     QuestHelper.setCompletedQuest(quest, player);
                     player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.getCompletedQuest().getName() + " by: " + player.getName());
-                } else if (icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
-                    return;
                 }
             }
         }

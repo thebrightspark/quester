@@ -15,7 +15,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class CapabilityQuest implements ICapQuests{
@@ -112,7 +111,7 @@ public class CapabilityQuest implements ICapQuests{
             tag.setString(KEY_QUEST_COMPLETE, quest.getName());
             taglist.appendTag(tag);
         }
-        for(IQuestTemplate quest : QuestData.uncompletedQuests){
+        for(IQuestTemplate quest : QuestData.incompletedQuests){
             NBTTagList taglist = nbt.getTagList(KEY_QUEST_UNCOMPLETE, Constants.NBT.TAG_COMPOUND);
             NBTTagCompound tag = new NBTTagCompound();
             tag.setString(KEY_QUEST_UNCOMPLETE, quest.getName());

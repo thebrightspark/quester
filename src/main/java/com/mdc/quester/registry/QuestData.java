@@ -9,7 +9,7 @@ import java.util.*;
 public class QuestData {
     public static Map<String, IQuestTemplate> quests = new HashMap<>();
     public static Map<String, IQuestPageTemplate> pages  = new HashMap<>();
-    public static Set<IQuestTemplate> uncompletedQuests = new HashSet<>();
+    public static Set<IQuestTemplate> incompletedQuests = new HashSet<>();
     public static Set<IQuestTemplate> completedQuests = new HashSet<>();
 
     public static IQuestTemplate<?> getQuestTemplate(){
@@ -40,7 +40,7 @@ public class QuestData {
     }
 
     static <T extends IQuestTemplate<T>> void setQuestTemplate(IQuestTemplate<T> template, String name){
-        Quester.LOGGER.info("Registering quests: ");
+        Quester.LOGGER.info("Registering quest: ");
         if(quests.size() == 0){
             quests.put(name, template);
             Quester.LOGGER.info("\t"+template.getName());
@@ -57,15 +57,15 @@ public class QuestData {
 
     public static void setIncompletedQuest(IQuestTemplate quest){
         Quester.LOGGER.info("Setting quests 'incomplete':");
-        if(uncompletedQuests.size() == 0){
-            uncompletedQuests.add(quest);
+        if(incompletedQuests.size() == 0){
+            incompletedQuests.add(quest);
             Quester.LOGGER.info("\t"+quest.getName());
         }else{
-            for(IQuestTemplate q : uncompletedQuests){
+            for(IQuestTemplate q : incompletedQuests){
                 if(quest.getName().equalsIgnoreCase(q.getName())){
                     throw new IllegalArgumentException("Cannot add incomplete quest as it is already added to the set: " + quest.getName() + " and " + q.getName());
                 }
-                uncompletedQuests.add(quest);
+                incompletedQuests.add(quest);
                 Quester.LOGGER.info("\t"+quest.getName());
             }
         }
@@ -73,13 +73,18 @@ public class QuestData {
 
     public static void setCompletedQuest(IQuestTemplate quest){
         Quester.LOGGER.info("Setting quests 'complete':");
-        for(IQuestTemplate q : completedQuests){
-            if(quest.getName().equalsIgnoreCase(q.getName())){
-                throw new IllegalArgumentException("I don't know how you managed to do this but uhh... you are setting a quest complete that is already completed???");
-            }else{
-                Quester.LOGGER.info("\t"+quest.getName());
-                uncompletedQuests.remove(quest);
-                completedQuests.add(quest);
+        if(completedQuests.size() == 0){
+            incompletedQuests.remove(quest);
+            completedQuests.add(quest);
+        }else {
+            for (IQuestTemplate q : completedQuests) {
+                if (quest.getName().equalsIgnoreCase(q.getName())) {
+                    throw new IllegalArgumentException("I don't know how you managed to do this but uhh... you are setting a quest complete that is already completed???");
+                } else {
+                    Quester.LOGGER.info("\t" + quest.getName());
+                    incompletedQuests.remove(quest);
+                    completedQuests.add(quest);
+                }
             }
         }
     }
