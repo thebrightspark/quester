@@ -50,8 +50,8 @@ public class QuestData {
                     throw new IllegalArgumentException("Cannot add quest as it is already added: " + template.getName() + " and " + quest.getName());
                 }
                 Quester.LOGGER.info("\t"+template.getName());
-                quests.put(name, template);
             }
+            quests.put(name, template);
         }
     }
 
