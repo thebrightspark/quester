@@ -45,26 +45,19 @@ public class CapabilityQuest implements ICapQuests{
     }
 
     @Override
-    public void clearSet(Set<IQuestTemplate> list) {
-        list.clear();
-    }
-
-    @Override
     public boolean addIncompletedQuest(IQuestTemplate quest, EntityPlayerMP player) {
         if(questsIncompleted.size() == 0){
             questsIncompleted.add(quest);
-            QuestData.setIncompletedQuest(quest);
             dataChanged(player);
             return true;
         }else{
             for(IQuestTemplate q : questsIncompleted){
-                if(!q.getName().equals(quest.getName())){
-                    questsIncompleted.add(quest);
-                    QuestData.setIncompletedQuest(quest);
-                    dataChanged(player);
-                    return true;
+                if(q.getName().equals(quest.getName())){
+                    return false;
                 }
             }
+            questsIncompleted.add(quest);
+            dataChanged(player);
         }
 
         return false;
@@ -78,12 +71,12 @@ public class CapabilityQuest implements ICapQuests{
             return true;
         }else {
             for (IQuestTemplate q : questsCompleted) {
-                if (!q.getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
-                    questsCompleted.add(quest);
-                    dataChanged(player);
-                    return true;
+                if (q.getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
+                    return false;
                 }
             }
+            questsCompleted.add(quest);
+            dataChanged(player);
         }
         return false;
     }

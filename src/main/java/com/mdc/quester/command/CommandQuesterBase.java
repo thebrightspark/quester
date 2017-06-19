@@ -42,9 +42,8 @@ public class CommandQuesterBase extends CommandBase{
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                icap.clearSet(icap.getCompletedQuests());
-                QuestData.clearSet(QuestData.getCompletedQuests());
-                for(IQuestTemplate quest : QuestData.quests.values()){
+                player.sendStatusMessage(new TextComponentString("Quests reset: " + QuestData.completedQuests.size()), false);
+                for(IQuestTemplate quest : QuestData.completedQuests){
                     icap.addIncompletedQuest(quest, player);
                     QuestData.setIncompletedQuest(quest);
                 }

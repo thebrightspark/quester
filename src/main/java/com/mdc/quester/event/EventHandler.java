@@ -44,14 +44,14 @@ public class EventHandler {
         if(world.isRemote) return;
         if(event.getEntity() instanceof EntityPlayer){
             EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
-            if(!player.hasCapability(QuesterCapability.QUESTS, null)) return;
-            ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
+            ICapQuests icap = QuestHelper.getQuestCapability(player);
             if(icap == null) return;
-            for(IQuestTemplate quest : QuestData.quests.values()){
+            for(IQuestTemplate quest : QuestData.quests){
+                if(player.capabilities.isCreativeMode) return;
                 if(!icap.hasCompletedQuest(quest)){
-                    icap.addIncompletedQuest(quest, player);
+                    QuestHelper.setIncompleteQuest(quest, player);
                 }else{
-                    icap.addCompletedQuest(quest, player);
+                    QuestHelper.setCompletedQuest(quest, player);
                 }
             }
         }
@@ -65,10 +65,9 @@ public class EventHandler {
             World world = player.world;
             BlockPos pos = player.getPosition();
             for (IQuestTemplate quest : QuestData.incompletedQuests) {
-                ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
-                if (icap == null) continue;
-                icap.setPlayer(player);
-                if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
+                ICapQuests icap = QuestHelper.getQuestCapability(player);
+                if(icap == null) return;
+                if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos) && !player.capabilities.isCreativeMode) {
                     QuestHelper.setCompletedQuest(quest, player);
                     player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.getCompletedQuest().getName() + " by: " + player.getName());
