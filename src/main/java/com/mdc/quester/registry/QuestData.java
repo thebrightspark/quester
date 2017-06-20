@@ -3,6 +3,7 @@ package com.mdc.quester.registry;
 import com.mdc.quester.Quester;
 import com.mdc.quester.templates.IQuestPageTemplate;
 import com.mdc.quester.templates.IQuestTemplate;
+import net.minecraftforge.fml.common.FMLLog;
 
 import java.util.*;
 
@@ -35,19 +36,26 @@ public class QuestData {
         return null;
     }
 
-    static <T extends IQuestTemplate<T>> void setQuestTemplate(IQuestTemplate<T> template, String name){
+    static <T extends IQuestTemplate<T>> void setQuestTemplate(IQuestTemplate<T> template){
         Quester.LOGGER.info("Registering quest: ");
         if(quests.size() == 0){
             quests.add(template);
             Quester.LOGGER.info("\t"+template.getName());
         }else{
-            for(IQuestTemplate quest : quests){
-                if(template.getName().equals(quest.getName())){
-                    throw new IllegalArgumentException("Cannot add quest as it is already added: " + template.getName() + " and " + quest.getName());
+            Iterable<IQuestTemplate> iterable = quests;
+            Iterator iterator = iterable.iterator();
+            if(iterator.hasNext()){
+                if(iterable.iterator().next().getName().equals(template.getName())){
+                    try {
+                        throw new Exception("Cannot set quest complete as it is already completed: " + template.getName());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }else{
+                    Quester.LOGGER.info("\t"+template.getName());
+                    quests.add(template);
                 }
             }
-            Quester.LOGGER.info("\t"+template.getName());
-            quests.add(template);
         }
     }
 
@@ -58,14 +66,24 @@ public class QuestData {
             incompletedQuests.add(quest);
             Quester.LOGGER.info("\t"+quest.getName());
         }else{
-            for(IQuestTemplate q : incompletedQuests){
-                if(quest.getName().equals(q.getName())){
-                    throw new IllegalArgumentException("Cannot add incomplete quest as it is already added to the set: " + quest.getName() + " and " + q.getName());
+            Iterable<IQuestTemplate> incompletedIterable = incompletedQuests;
+            Iterator iterator = incompletedIterable.iterator();
+            while (iterator.hasNext()) {
+                incompletedQuests.add(incompletedIterable.iterator().next());
+                completedQuests.add(incompletedIterable.iterator().next());
+                if(!iterator.hasNext()){
+                    if(incompletedIterable.iterator().next().getName().equals(quest.getName())){
+                        try {
+                            throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }else {
+                        incompletedQuests.add(quest);
+                        completedQuests.remove(quest);
+                    }
                 }
             }
-            Quester.LOGGER.info("\t"+quest.getName());
-            completedQuests.remove(quest);
-            incompletedQuests.add(quest);
         }
     }
 
@@ -75,14 +93,25 @@ public class QuestData {
             incompletedQuests.remove(quest);
             completedQuests.add(quest);
         }else {
-            for (IQuestTemplate q : completedQuests) {
-                if (quest.getName().equals(q.getName())) {
-                    throw new IllegalArgumentException("Setting quest complete that is already set to complete: " + quest.getName() + " and " + q.getName());
+            Iterable<IQuestTemplate> completedIterable = completedQuests;
+            Iterable<IQuestTemplate> incompletedIterable = incompletedQuests;
+            Iterator iterator = completedIterable.iterator();
+            while(iterator.hasNext()){
+                completedQuests.add(completedIterable.iterator().next());
+                incompletedQuests.add(incompletedIterable.iterator().next());
+                if(!iterator.hasNext()){
+                    if(completedIterable.iterator().next().getName().equals(quest.getName())){
+                        try {
+                            throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }else {
+                        completedQuests.add(quest);
+                        incompletedQuests.remove(quest);
+                    }
                 }
             }
-            Quester.LOGGER.info("\t" + quest.getName());
-            incompletedQuests.remove(quest);
-            completedQuests.add(quest);
         }
     }
 

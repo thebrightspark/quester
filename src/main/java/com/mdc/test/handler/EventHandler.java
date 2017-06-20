@@ -5,6 +5,8 @@ import com.mdc.quester.capability.quest.ICapQuests;
 import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
+import com.mdc.test.QuestGetCoal;
+import com.mdc.test.QuestZombieHunter;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;
@@ -25,8 +27,7 @@ public class EventHandler {
         if(world.isRemote) return;
         Block block = event.getState().getBlock();
         if(block.getRegistryName().toString().equals(Blocks.COAL_ORE.getRegistryName().toString())){
-            IQuestTemplate quest = QuestData.getQuestByName("Get Coal");
-            assert quest != null;
+            QuestGetCoal quest = new QuestGetCoal();
             quest.setTriggered(true);
         }
     }
@@ -42,8 +43,7 @@ public class EventHandler {
                 EntityZombie zombie = (EntityZombie)event.getEntity();
                 World world = zombie.world;
                 if(world.isRemote) return;
-                IQuestTemplate quest = QuestData.getQuestByName("Zombie Hunter");
-                assert quest != null;
+                QuestZombieHunter quest = new QuestZombieHunter();
                 if(icap.hasCompletedQuest(quest)) {
                     if (zombie.isDead) {
                         zombiesKilled++;

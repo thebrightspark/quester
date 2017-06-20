@@ -7,7 +7,7 @@ import com.mdc.quester.templates.IQuestTemplate;
 public class QuestRegistry {
 
     public static <T extends IQuestTemplate<T>> IQuestTemplate<T> registerQuest(IQuestTemplate<T> quest){
-        QuestData.setQuestTemplate(quest, quest.getName());
+        QuestData.setQuestTemplate(quest);
         return quest.getT(quest);
     }
 
