@@ -6,16 +6,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class QuestZombieHunter implements IQuestTemplate<QuestZombieHunter> {
-    private boolean isTriggered = false;
+    private static boolean isTriggered = false;
 
     @Override
     public String getName() {
         return "Zombie Hunter";
     }
 
-    @Override
-    public void setTriggered(boolean triggered) {
-        this.isTriggered = triggered;
+    public static void setTriggered(boolean triggered) {
+        isTriggered = triggered;
     }
 
     @Override

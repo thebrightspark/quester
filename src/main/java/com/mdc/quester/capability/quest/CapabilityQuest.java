@@ -15,6 +15,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class CapabilityQuest implements ICapQuests{
@@ -47,15 +48,20 @@ public class CapabilityQuest implements ICapQuests{
     @Override
     public boolean addIncompletedQuest(IQuestTemplate quest, EntityPlayerMP player) {
         if(questsIncompleted.size() == 0){
+            questsCompleted.remove(quest);
             questsIncompleted.add(quest);
             dataChanged(player);
             return true;
         }else{
-            for(IQuestTemplate q : questsIncompleted){
-                if(q.getName().equals(quest.getName())){
+            Iterable<IQuestTemplate> iterable = questsIncompleted;
+            Iterator<IQuestTemplate> iterator = iterable.iterator();
+            if(iterator.hasNext()) {
+                iterator.forEachRemaining(questsIncompleted::add);
+                if (iterator.next().getName().equals(quest.getName())) {
                     return false;
                 }
             }
+            questsCompleted.remove(quest);
             questsIncompleted.add(quest);
             dataChanged(player);
         }
@@ -66,15 +72,20 @@ public class CapabilityQuest implements ICapQuests{
     @Override
     public boolean addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player){
         if(questsCompleted.size() == 0){
+            questsIncompleted.remove(quest);
             questsCompleted.add(quest);
             dataChanged(player);
             return true;
         }else {
-            for (IQuestTemplate q : questsCompleted) {
-                if (q.getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
+            Iterable<IQuestTemplate> iterable = questsCompleted;
+            Iterator<IQuestTemplate> iterator = iterable.iterator();
+            if(iterator.hasNext()) {
+                iterator.forEachRemaining(questsCompleted::add);
+                if (iterator.next().getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
                     return false;
                 }
             }
+            questsIncompleted.remove(quest);
             questsCompleted.add(quest);
             dataChanged(player);
         }

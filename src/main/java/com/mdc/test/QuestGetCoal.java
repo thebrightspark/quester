@@ -13,8 +13,7 @@ public class QuestGetCoal implements IQuestTemplate<QuestGetCoal>{
         return "Get Coal";
     }
 
-    @Override
-    public void setTriggered(boolean triggered){
+    public static void setTriggered(boolean triggered){
         isTriggered = triggered;
     }
 

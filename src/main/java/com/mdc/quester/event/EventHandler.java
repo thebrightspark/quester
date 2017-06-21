@@ -20,6 +20,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.Iterator;
+
 @Mod.EventBusSubscriber
 public class EventHandler {
 
@@ -46,11 +48,14 @@ public class EventHandler {
             EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
             ICapQuests icap = QuestHelper.getQuestCapability(player);
             if(icap == null) return;
-            for(IQuestTemplate quest : QuestData.quests){
-                if(player.capabilities.isCreativeMode) return;
-                if(!icap.hasCompletedQuest(quest)){
+            Iterable<IQuestTemplate> iterable = QuestData.quests;
+            Iterator<IQuestTemplate> iterator = iterable.iterator();
+            if(iterator.hasNext()) {
+                IQuestTemplate quest = iterator.next();
+//                if (player.capabilities.isCreativeMode) return;
+                if (!icap.hasCompletedQuest(quest)) {
                     QuestHelper.setIncompleteQuest(quest, player);
-                }else{
+                } else {
                     QuestHelper.setCompletedQuest(quest, player);
                 }
             }
@@ -64,10 +69,13 @@ public class EventHandler {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             World world = player.world;
             BlockPos pos = player.getPosition();
-            for (IQuestTemplate quest : QuestData.incompletedQuests) {
-                ICapQuests icap = QuestHelper.getQuestCapability(player);
-                if(icap == null) return;
-                if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos) && !player.capabilities.isCreativeMode) {
+            ICapQuests icap = QuestHelper.getQuestCapability(player);
+            if (icap == null) return;
+            Iterable<IQuestTemplate> incompletedIterable = QuestData.incompletedQuests;
+            Iterator<IQuestTemplate> iterator = incompletedIterable.iterator();
+            if(iterator.hasNext()) {
+                IQuestTemplate quest = iterator.next();
+                if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
                     QuestHelper.setCompletedQuest(quest, player);
                     player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.getCompletedQuest().getName() + " by: " + player.getName());

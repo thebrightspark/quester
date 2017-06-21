@@ -43,8 +43,9 @@ public class QuestData {
             Quester.LOGGER.info("\t"+template.getName());
         }else{
             Iterable<IQuestTemplate> iterable = quests;
-            Iterator iterator = iterable.iterator();
+            Iterator<IQuestTemplate> iterator = iterable.iterator();
             if(iterator.hasNext()){
+                iterator.forEachRemaining(quests::add);
                 if(iterable.iterator().next().getName().equals(template.getName())){
                     try {
                         throw new Exception("Cannot set quest complete as it is already completed: " + template.getName());
@@ -67,21 +68,21 @@ public class QuestData {
             Quester.LOGGER.info("\t"+quest.getName());
         }else{
             Iterable<IQuestTemplate> incompletedIterable = incompletedQuests;
-            Iterator iterator = incompletedIterable.iterator();
-            while (iterator.hasNext()) {
-                incompletedQuests.add(incompletedIterable.iterator().next());
-                completedQuests.add(incompletedIterable.iterator().next());
-                if(!iterator.hasNext()){
-                    if(incompletedIterable.iterator().next().getName().equals(quest.getName())){
-                        try {
-                            throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }else {
-                        incompletedQuests.add(quest);
-                        completedQuests.remove(quest);
+            Iterable<IQuestTemplate> completedIterable = completedQuests;
+            Iterator<IQuestTemplate> incompletedIterator = incompletedIterable.iterator();
+            Iterator<IQuestTemplate> completedIterator = completedIterable.iterator();
+            if (incompletedIterator.hasNext()) {
+                completedIterator.forEachRemaining(completedQuests::add);
+                incompletedIterator.forEachRemaining(incompletedQuests::add);
+                if(incompletedIterable.iterator().next().getName().equals(quest.getName())){
+                    try {
+                        throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
+                }else {
+                    incompletedQuests.add(quest);
+                    completedQuests.remove(quest);
                 }
             }
         }
@@ -94,22 +95,21 @@ public class QuestData {
             completedQuests.add(quest);
         }else {
             Iterable<IQuestTemplate> completedIterable = completedQuests;
+            Iterator<IQuestTemplate> completedIterator = completedIterable.iterator();
             Iterable<IQuestTemplate> incompletedIterable = incompletedQuests;
-            Iterator iterator = completedIterable.iterator();
-            while(iterator.hasNext()){
-                completedQuests.add(completedIterable.iterator().next());
-                incompletedQuests.add(incompletedIterable.iterator().next());
-                if(!iterator.hasNext()){
-                    if(completedIterable.iterator().next().getName().equals(quest.getName())){
-                        try {
-                            throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                        }
-                    }else {
-                        completedQuests.add(quest);
-                        incompletedQuests.remove(quest);
+            Iterator<IQuestTemplate> incompletedIterator = incompletedIterable.iterator();
+            if(completedIterator.hasNext()){
+                completedIterator.forEachRemaining(completedQuests::add);
+                incompletedIterator.forEachRemaining(incompletedQuests::add);
+                if(completedIterator.next().getName().equals(quest.getName())){
+                    try {
+                        throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
+                }else {
+                    completedQuests.add(quest);
+                    incompletedQuests.remove(quest);
                 }
             }
         }

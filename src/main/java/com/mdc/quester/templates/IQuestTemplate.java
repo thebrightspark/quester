@@ -78,6 +78,8 @@ public interface IQuestTemplate<T> {
      * @author Alex Couch
      * @see IQuestTemplate#triggered(EntityPlayer, World, BlockPos)
      * @since 0.6.7
+     * @deprecated currently deprecated. Create your own method and call it through a static reference
      */
-    default void setTriggered(boolean triggered){}
+    //@Deprecated
+    //default void setTriggered(boolean triggered){}
 }

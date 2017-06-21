@@ -57,9 +57,8 @@ public class CommandQuesterBase extends CommandBase{
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                player.sendStatusMessage(new TextComponentString("Completed Quests: "), false);
-                for(IQuestTemplate quest : icap.getCompletedQuests()){
-                    player.sendStatusMessage(new TextComponentString(quest.getName()), false);
+                for(IQuestTemplate quest : QuestData.quests){
+                    player.sendStatusMessage(new TextComponentString(quest.getName() + ": " + (icap.hasCompletedQuest(quest) ? "completed" : "incompleted")), false);
                 }
             }
         }
