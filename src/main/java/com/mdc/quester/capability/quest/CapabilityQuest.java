@@ -127,7 +127,7 @@ public class CapabilityQuest implements ICapQuests{
                 NBTTagCompound comp = temp.serializeQuest(this.player);
                 nbt_incomp.setTag(KEY_QUESTS_PROGRESS, comp);
                 list_incomp.appendTag(nbt_incomp);
-                n.setTag(KEY_QUEST_COMPLETE, list_incomp);
+                n.setTag(KEY_QUEST_INCOMPLETE, list_incomp);
                 taglist.appendTag(n);
             }
         }
@@ -143,7 +143,7 @@ public class CapabilityQuest implements ICapQuests{
                 NBTTagCompound comp = quest.serializeQuest(this.player);
                 comp_compl.setTag(KEY_QUESTS_PROGRESS, comp);
                 tag2.appendTag(tag2);
-                n.setTag(KEY_QUEST_INCOMPLETE, tag2);
+                n.setTag(KEY_QUEST_COMPLETE, tag2);
                 list.appendTag(n);
             }
         }
