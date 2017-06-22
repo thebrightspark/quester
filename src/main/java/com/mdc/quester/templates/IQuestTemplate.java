@@ -1,6 +1,7 @@
 package com.mdc.quester.templates;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -60,25 +61,6 @@ public interface IQuestTemplate<T> {
      */
     boolean triggered(EntityPlayer player, World world, BlockPos pos);
 
-    /**
-     * <p>This method can be overrided to set the quest to be <code>triggered</code> from an external class, such as an
-     * event handler. You need to call this by instantiating a new instance of the quest and set it through that.
-     * You will need to set a private boolean field in your quest class to be called by the <code>triggered</code> method.</p><br>
-     * An example of this is shown here:
-     * <pre>
-     * private static boolean isTriggered = false;
-     *
-     * public void setTriggered(boolean triggered){
-     * isTriggered = triggered;
-     * }
-     * </pre>
-     * This is how it should be done normally, only when needed.
-     *
-     * @param triggered whether the quest is triggered from an external class (like an event handler)
-     * @author Alex Couch
-     * @see IQuestTemplate#triggered(EntityPlayer, World, BlockPos)
-     * @since 0.6.7
-     */
-    //@Deprecated
-    //default void setTriggered(boolean triggered){}
+    NBTTagCompound serializeQuest(EntityPlayer player);
+    void deserializeQuest(NBTTagCompound comp);
 }

@@ -42,10 +42,10 @@ public class CommandQuesterBase extends CommandBase{
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                player.sendStatusMessage(new TextComponentString("Quests reset: " + QuestData.completedQuests.size()), false);
-                for(IQuestTemplate quest : QuestData.completedQuests){
+                player.sendStatusMessage(new TextComponentString("Quests reset: " + QuestData.INSTANCE.completedQuests.size()), false);
+                for(IQuestTemplate quest : QuestData.INSTANCE.completedQuests){
                     icap.addIncompletedQuest(quest, player);
-                    QuestData.setIncompletedQuest(quest);
+                    QuestData.INSTANCE.setIncompletedQuest(quest);
                 }
             }
         }
@@ -57,8 +57,12 @@ public class CommandQuesterBase extends CommandBase{
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                for(IQuestTemplate quest : QuestData.quests){
-                    player.sendStatusMessage(new TextComponentString(quest.getName() + ": " + (icap.hasCompletedQuest(quest) ? "completed" : "incompleted")), false);
+                for(IQuestTemplate quest : QuestData.INSTANCE.quests){
+                    if(icap.hasCompletedQuest(quest)){
+                        player.sendStatusMessage(new TextComponentString(quest.getName() + ": completed"), false);
+                    }else {
+                        player.sendStatusMessage(new TextComponentString(quest.getName() + ": incompleted"), false);
+                    }
                 }
             }
         }

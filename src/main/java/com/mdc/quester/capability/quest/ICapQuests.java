@@ -10,6 +10,8 @@ import java.util.Set;
 public interface ICapQuests extends ICapability {
     Set<IQuestTemplate> getCompletedQuests();
 
+    Set<IQuestTemplate> getIncompletedQuests();
+
     boolean hasCompletedQuest(IQuestTemplate quest);
 
     boolean addCompletedQuest(IQuestTemplate quest, EntityPlayerMP player);

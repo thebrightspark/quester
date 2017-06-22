@@ -13,14 +13,18 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @Mod.EventBusSubscriber
 public class EventHandler {
+    public static int zombiesKilled = 0;
+
     @SubscribeEvent
     public static void breakBlock(BlockEvent.BreakEvent event){
         World world = event.getWorld();
@@ -33,20 +37,16 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void killZombie(LivingDeathEvent event) {
-        int zombiesKilled = 0;
-        if(event.getSource().getEntity() instanceof EntityPlayer) {
-            if(event.getEntity() instanceof EntityZombie){
-                EntityZombie zombie = (EntityZombie)event.getEntity();
-                World world = zombie.world;
-                if(world.isRemote) return;
-                if (zombie.isDead) {
-                    zombiesKilled++;
-                    Quester.LOGGER.info("Zombies killed: " + zombiesKilled);
-                    if (zombiesKilled >= 10) {
-                        QuestZombieHunter.setTriggered(true);
-                    }else{
-                        QuestZombieHunter.setTriggered(false);
-                    }
+        if(event.getEntity() instanceof EntityZombie){
+            EntityZombie zombie = (EntityZombie)event.getEntity();
+            World world = zombie.world;
+            if(world.isRemote) return;
+            Entity entity = event.getSource().getEntity();
+            if (entity instanceof EntityPlayer) {
+                zombiesKilled++;
+                Quester.LOGGER.info("Zombies killed: " + zombiesKilled);
+                if (zombiesKilled >= 10) {
+                    QuestZombieHunter.setTriggered(true);
                 }
             }
         }

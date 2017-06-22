@@ -10,6 +10,7 @@ import com.mdc.quester.registry.QuestData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -41,22 +42,25 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public static void setQuestsIncomplete(EntityJoinWorldEvent event){
+    public static void setQuestData(EntityJoinWorldEvent event){
         World world = event.getWorld();
         if(world.isRemote) return;
         if(event.getEntity() instanceof EntityPlayer){
             EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
-            ICapQuests icap = QuestHelper.getQuestCapability(player);
+            ICapQuests icap = QuestHelper.INSTANCE.getQuestCapability(player);
             if(icap == null) return;
-            Iterable<IQuestTemplate> iterable = QuestData.quests;
-            Iterator<IQuestTemplate> iterator = iterable.iterator();
-            if(iterator.hasNext()) {
+            Iterator<IQuestTemplate> iterator = QuestData.INSTANCE.quests.iterator();
+            while(iterator.hasNext()) {
                 IQuestTemplate quest = iterator.next();
-//                if (player.capabilities.isCreativeMode) return;
                 if (!icap.hasCompletedQuest(quest)) {
-                    QuestHelper.setIncompleteQuest(quest, player);
+                    QuestHelper.INSTANCE.setIncompleteQuest(quest, player);
                 } else {
-                    QuestHelper.setCompletedQuest(quest, player);
+                    Iterator<IQuestTemplate> it = icap.getCompletedQuests().iterator();
+                    while(it.hasNext()){
+                        IQuestTemplate temp = it.next();
+                        QuestData.INSTANCE.setCompletedQuest(temp);
+                        Quester.LOGGER.info("Quest already completed: " + temp.getName() + " by " + player.getName());
+                    }
                 }
             }
         }
@@ -69,16 +73,15 @@ public class EventHandler {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             World world = player.world;
             BlockPos pos = player.getPosition();
-            ICapQuests icap = QuestHelper.getQuestCapability(player);
+            ICapQuests icap = QuestHelper.INSTANCE.getQuestCapability(player);
             if (icap == null) return;
-            Iterable<IQuestTemplate> incompletedIterable = QuestData.incompletedQuests;
-            Iterator<IQuestTemplate> iterator = incompletedIterable.iterator();
-            if(iterator.hasNext()) {
-                IQuestTemplate quest = iterator.next();
+            Iterator<IQuestTemplate> incompletedIt = QuestData.INSTANCE.incompletedQuests.iterator();
+            while (incompletedIt.hasNext()) {
+                IQuestTemplate quest = incompletedIt.next();
                 if (!icap.hasCompletedQuest(quest) && quest.triggered(player, world, pos)) {
-                    QuestHelper.setCompletedQuest(quest, player);
-                    player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.getCompletedQuest().getName()), true);
-                    Quester.LOGGER.info("Quest completed: " + QuestHelper.getCompletedQuest().getName() + " by: " + player.getName());
+                    QuestHelper.INSTANCE.setCompletedQuest(quest, player);
+                    player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.INSTANCE.getCompletedQuest().getName()), true);
+                    Quester.LOGGER.info("Quest completed: " + QuestHelper.INSTANCE.getCompletedQuest().getName() + " by: " + player.getName());
                 }
             }
         }

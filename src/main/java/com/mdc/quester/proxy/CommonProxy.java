@@ -14,6 +14,7 @@ public class CommonProxy {
     }
 
     public void init(){
+        //This is how the test quests are being initialized. Pay no heed to this.
         QuestProxy.init();
     }
 

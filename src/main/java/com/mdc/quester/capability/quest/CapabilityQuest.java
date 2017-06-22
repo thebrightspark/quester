@@ -7,6 +7,7 @@ import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.messages.MessageCapability;
 import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.registry.QuestData;
+import io.netty.util.internal.ConcurrentSet;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -22,14 +23,19 @@ public class CapabilityQuest implements ICapQuests{
     private static final String KEY_QUEST = "quest";
     private static final String KEY_QUESTS = "quests";
     private static final String KEY_QUEST_COMPLETE = "completed_quests";
-    private static final String KEY_QUEST_INCOMPLETE = "uncomplete_quests";
+    private static final String KEY_QUEST_INCOMPLETE = "incomplete_quests";
+    private static final String KEY_QUESTS_PROGRESS = "progress";
     private EntityPlayerMP player;
-    private static Set<IQuestTemplate> questsCompleted = new HashSet<>();
-    private static Set<IQuestTemplate> questsIncompleted = new HashSet<>();
+    private Set<IQuestTemplate> questsCompleted = new ConcurrentSet<>();
+    private Set<IQuestTemplate> questsIncompleted = new ConcurrentSet<>();
 
     @Override
     public Set<IQuestTemplate> getCompletedQuests() {
         return questsCompleted;
+    }
+
+    public Set<IQuestTemplate> getIncompletedQuests(){
+        return questsIncompleted;
     }
 
     @Override
@@ -53,20 +59,19 @@ public class CapabilityQuest implements ICapQuests{
             dataChanged(player);
             return true;
         }else{
-            Iterable<IQuestTemplate> iterable = questsIncompleted;
-            Iterator<IQuestTemplate> iterator = iterable.iterator();
-            if(iterator.hasNext()) {
-                iterator.forEachRemaining(questsIncompleted::add);
-                if (iterator.next().getName().equals(quest.getName())) {
+            Iterator<IQuestTemplate> iterator = questsIncompleted.iterator();
+            while(iterator.hasNext()) {
+                IQuestTemplate temp = iterator.next();
+                if (temp.getName().equals(quest.getName())) {
                     return false;
                 }
             }
             questsCompleted.remove(quest);
             questsIncompleted.add(quest);
             dataChanged(player);
+            return true;
         }
 
-        return false;
     }
 
     @Override
@@ -77,19 +82,18 @@ public class CapabilityQuest implements ICapQuests{
             dataChanged(player);
             return true;
         }else {
-            Iterable<IQuestTemplate> iterable = questsCompleted;
-            Iterator<IQuestTemplate> iterator = iterable.iterator();
-            if(iterator.hasNext()) {
-                iterator.forEachRemaining(questsCompleted::add);
-                if (iterator.next().getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
+            Iterator<IQuestTemplate> iterator = questsCompleted.iterator();
+            while(iterator.hasNext()) {
+                IQuestTemplate temp = iterator.next();
+                if (temp.getName().equals(quest.getName()) && !hasCompletedQuest(quest)) {
                     return false;
                 }
             }
             questsIncompleted.remove(quest);
             questsCompleted.add(quest);
             dataChanged(player);
+            return true;
         }
-        return false;
     }
 
     @Override
@@ -111,19 +115,37 @@ public class CapabilityQuest implements ICapQuests{
     public NBTTagCompound serializeNBT() {
         NBTTagCompound nbt = new NBTTagCompound();
         NBTTagCompound n = new NBTTagCompound();
-        for(IQuestTemplate quest : QuestData.completedQuests){
+        //Adding incomplete quests to nbt
+        Iterator<IQuestTemplate> it = QuestData.INSTANCE.incompletedQuests.iterator();
+        while(it.hasNext()) {
+            IQuestTemplate temp = it.next();
             NBTTagList taglist = new NBTTagList();
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setString(KEY_QUEST, quest.getName());
-            taglist.appendTag(tag);
-            n.setTag(KEY_QUEST_COMPLETE, taglist);
+            for (int i = 0; i < QuestData.INSTANCE.incompletedQuests.size(); i++) {
+                NBTTagList list_incomp = new NBTTagList();
+                NBTTagCompound nbt_incomp = new NBTTagCompound();
+                nbt_incomp.setString(KEY_QUEST, temp.getName());
+                NBTTagCompound comp = temp.serializeQuest(this.player);
+                nbt_incomp.setTag(KEY_QUESTS_PROGRESS, comp);
+                list_incomp.appendTag(nbt_incomp);
+                n.setTag(KEY_QUEST_COMPLETE, list_incomp);
+                taglist.appendTag(n);
+            }
         }
-        for(IQuestTemplate quest : QuestData.incompletedQuests){
-            NBTTagList taglist = new NBTTagList();
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setString(KEY_QUEST, quest.getName());
-            taglist.appendTag(tag);
-            n.setTag(KEY_QUEST_INCOMPLETE, taglist);
+        //Adding completed quests to nbt
+        Iterator<IQuestTemplate> it2 = QuestData.INSTANCE.completedQuests.iterator();
+        while(it2.hasNext()) {
+            NBTTagList list = new NBTTagList();
+            IQuestTemplate quest = it2.next();
+            for (int i = 0; i < QuestData.INSTANCE.completedQuests.size(); i++) {
+                NBTTagList tag2 = new NBTTagList();
+                NBTTagCompound comp_compl = new NBTTagCompound();
+                comp_compl.setString(KEY_QUEST, quest.getName());
+                NBTTagCompound comp = quest.serializeQuest(this.player);
+                comp_compl.setTag(KEY_QUESTS_PROGRESS, comp);
+                tag2.appendTag(tag2);
+                n.setTag(KEY_QUEST_INCOMPLETE, tag2);
+                list.appendTag(n);
+            }
         }
         nbt.setTag(KEY_QUESTS, n);
         return nbt;
@@ -137,15 +159,18 @@ public class CapabilityQuest implements ICapQuests{
             for(int i = 0; i < completedlist.tagCount();i++) {
                 NBTTagCompound tag = completedlist.getCompoundTagAt(i);
                 String name = tag.getString(KEY_QUEST);
-                IQuestTemplate quest = QuestData.getQuestByName(name);
+                IQuestTemplate quest = QuestData.INSTANCE.getQuestByName(name);
                 questsCompleted.add(quest);
             }
             NBTTagList incompletelist = n.getTagList(KEY_QUEST_INCOMPLETE, Constants.NBT.TAG_COMPOUND);
             for(int i = 0; i < incompletelist.tagCount();i++) {
                 NBTTagCompound tag = incompletelist.getCompoundTagAt(i);
                 String name = tag.getString(KEY_QUEST);
-                IQuestTemplate quest = QuestData.getQuestByName(name);
+                IQuestTemplate quest = QuestData.INSTANCE.getQuestByName(name);
                 questsIncompleted.add(quest);
+                if(nbt.hasKey(KEY_QUESTS_PROGRESS)){
+                    quest.deserializeQuest(nbt);
+                }
             }
         }
     }
