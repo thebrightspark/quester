@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class CapabilityQuest implements ICapQuests{
-    private static final String KEY_QUEST = "quest";
-    private static final String KEY_QUESTS = "quests";
+    private static final String KEY_QUEST_NAME = "quest_name";
+    private static final String KEY_QUEST_DATA = "quest_name";
     private static final String KEY_QUEST_COMPLETE = "completed_quests";
     private static final String KEY_QUEST_INCOMPLETE = "incomplete_quests";
     private static final String KEY_QUESTS_PROGRESS = "progress";
@@ -126,48 +126,35 @@ public class CapabilityQuest implements ICapQuests{
 
     @Override
     public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        NBTTagList list = new NBTTagList();
+        NBTTagCompound ret = new NBTTagCompound();
+
+        NBTTagList completed = new NBTTagList();
         for(IQuestTemplate temp : this.getCompletedQuests()){
-            NBTTagCompound comp_compl = new NBTTagCompound();
-            NBTTagCompound progress = temp.serializeQuest(this.player);
-            comp_compl.setTag(KEY_QUESTS_PROGRESS, progress);
-            list.appendTag(comp_compl);
+            NBTTagCompound quest = new NBTTagCompound();
+            NBTTagCompound name = new NBTTagCompound();
+            name.setString(KEY_QUEST_NAME, temp.getName());
+            quest.setTag(KEY_QUEST_NAME, name);
+            quest.setTag(KEY_QUEST_DATA, temp.serializeQuest(this.player));
+            completed.appendTag(quest);
         }
+        ret.setTag(KEY_QUEST_COMPLETE, completed);
+
+        NBTTagList incompleted = new NBTTagList();
         for(IQuestTemplate temp : this.getIncompletedQuests()){
-            NBTTagCompound comp_compl = new NBTTagCompound();
-            NBTTagCompound progress = temp.serializeQuest(this.player);
-            comp_compl.setTag(KEY_QUESTS_PROGRESS, progress);
-            list.appendTag(comp_compl);
+            NBTTagCompound quest = new NBTTagCompound();
+            NBTTagCompound name = new NBTTagCompound();
+            name.setString(KEY_QUEST_NAME, temp.getName());
+            quest.setTag(KEY_QUEST_NAME, name);
+            quest.setTag(KEY_QUEST_DATA, temp.serializeQuest(this.player));
+            incompleted.appendTag(quest);
         }
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setTag(KEY_QUEST, list);
-        nbt.setTag(KEY_QUESTS, compound);
-        return nbt;
+        ret.setTag(KEY_QUEST_INCOMPLETE, incompleted);
+
+        return ret;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        if(nbt.hasKey(KEY_QUESTS)){
-            NBTTagList taglist = nbt.getTagList(KEY_QUEST, Constants.NBT.TAG_COMPOUND);
-            for(IQuestTemplate temp : this.getCompletedQuests()){
-                for(int i = 0; i < taglist.tagCount(); i++) {
-                    if(taglist.getCompoundTagAt(i).hasKey(KEY_QUESTS_PROGRESS)) {
-                        temp.deserializeQuest(taglist.getCompoundTagAt(i));
-                    }else{
-                        this.setCompletedQuests(taglist.getStringTagAt(i));
-                    }
-                }
-            }
-            for(IQuestTemplate temp : this.getIncompletedQuests()){
-                for(int i = 0; i < taglist.tagCount(); i++) {
-                    if(taglist.getCompoundTagAt(i).hasKey(KEY_QUESTS_PROGRESS)) {
-                        temp.deserializeQuest(taglist.getCompoundTagAt(i));
-                    }else{
-                        this.setIncompletedQuests(taglist.getStringTagAt(i));
-                    }
-                }
-            }
-        }
+        //TODO: Deserialize NBT
     }
 }

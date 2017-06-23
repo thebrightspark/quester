@@ -18,7 +18,7 @@ public class QuestZombieHunter implements IQuestTemplate<QuestZombieHunter> {
     public NBTTagCompound serializeQuest(EntityPlayer player) {
         NBTTagCompound nbt = player.getEntityData();
 
-        nbt.setBoolean("progress", isTriggered);
+        nbt.setString("progress", String.valueOf(isTriggered));
 
         return nbt;
     }
@@ -26,7 +26,7 @@ public class QuestZombieHunter implements IQuestTemplate<QuestZombieHunter> {
     @Override
     public void deserializeQuest(NBTTagCompound comp) {
         if(comp.hasKey("progress")){
-            isTriggered = comp.getBoolean("progress");
+            isTriggered = Boolean.valueOf(comp.getString("progress"));
         }
     }
 
