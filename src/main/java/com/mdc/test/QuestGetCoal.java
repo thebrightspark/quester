@@ -17,14 +17,14 @@ public class QuestGetCoal implements IQuestTemplate<QuestGetCoal>{
     @Override
     public NBTTagCompound serializeQuest(EntityPlayer player) {
         NBTTagCompound nbt = player.getEntityData();
-        nbt.setBoolean("progress", isTriggered);
+        nbt.setString("progress", String.valueOf(isTriggered));
         return nbt;
     }
 
     @Override
     public void deserializeQuest(NBTTagCompound comp) {
         if(comp.hasKey("progress")){
-            isTriggered = comp.getBoolean("progress");
+            isTriggered = Boolean.getBoolean(comp.getString("progress"));
         }
     }
 
