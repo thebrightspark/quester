@@ -60,7 +60,7 @@ public class QuestData {
                 IQuestTemplate temp = it.next();
                 if(temp.getName().equals(quest.getName())){
                     try {
-                        throw new Exception("Cannot set quest complete as it is already completed: " + quest.getName());
+                        throw new Exception("Cannot set quest complete as it is already incompleted: " + quest.getName());
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }

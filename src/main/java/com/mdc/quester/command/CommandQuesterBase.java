@@ -4,6 +4,7 @@ import com.mdc.quester.capability.quest.ICapQuests;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.player.QuesterCapability;
+import com.mdc.quester.utils.NBTUtils;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -46,6 +47,7 @@ public class CommandQuesterBase extends CommandBase{
                 for(IQuestTemplate quest : QuestData.INSTANCE.completedQuests){
                     icap.addIncompletedQuest(quest, player);
                     QuestData.INSTANCE.setIncompletedQuest(quest);
+                    quest.resetQuest();
                 }
             }
         }
@@ -57,12 +59,11 @@ public class CommandQuesterBase extends CommandBase{
             if(player.hasCapability(QuesterCapability.QUESTS, null)){
                 ICapQuests icap = player.getCapability(QuesterCapability.QUESTS, null);
                 if(icap == null) return;
-                for(IQuestTemplate quest : QuestData.INSTANCE.quests){
-                    if(icap.hasCompletedQuest(quest)){
-                        player.sendStatusMessage(new TextComponentString(quest.getName() + ": completed"), false);
-                    }else {
-                        player.sendStatusMessage(new TextComponentString(quest.getName() + ": incompleted"), false);
-                    }
+                for(IQuestTemplate quest : QuestData.INSTANCE.completedQuests){
+                    player.sendStatusMessage(new TextComponentString(quest.getName() + ": completed"), false);
+                }
+                for(IQuestTemplate quest : QuestData.INSTANCE.incompletedQuests){
+                    player.sendStatusMessage(new TextComponentString(quest.getName() + ": incomplete"), false);
                 }
             }
         }

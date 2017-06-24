@@ -28,6 +28,11 @@ public class QuestGetCoal implements IQuestTemplate<QuestGetCoal>{
         }
     }
 
+    @Override
+    public void resetQuest() {
+        isTriggered = false;
+    }
+
     public static void setTriggered(boolean triggered){
         isTriggered = triggered;
     }

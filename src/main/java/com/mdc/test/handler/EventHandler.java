@@ -2,6 +2,7 @@ package com.mdc.test.handler;
 
 import com.mdc.quester.Quester;
 import com.mdc.quester.capability.quest.ICapQuests;
+import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
@@ -32,7 +33,9 @@ public class EventHandler {
         Block block = event.getState().getBlock();
         if(block.getRegistryName().equals(Blocks.COAL_ORE.getRegistryName())){
             QuestGetCoal.setTriggered(true);
+            return;
         }
+        QuestGetCoal.setTriggered(false);
     }
 
     @SubscribeEvent
@@ -42,11 +45,16 @@ public class EventHandler {
             World world = zombie.world;
             if(world.isRemote) return;
             Entity entity = event.getSource().getEntity();
-            if (entity instanceof EntityPlayer) {
-                zombiesKilled++;
-                Quester.LOGGER.info("Zombies killed: " + zombiesKilled);
-                if (zombiesKilled >= 10) {
-                    QuestZombieHunter.setTriggered(true);
+            if (entity instanceof EntityPlayerMP) {
+                EntityPlayerMP player = (EntityPlayerMP)entity;
+                ICapQuests icap = QuestHelper.INSTANCE.getQuestCapability(player);
+                IQuestTemplate quest = QuestData.INSTANCE.getQuestByName("Zombie Hunter");
+                if(!icap.hasCompletedQuest(quest)) {
+                    zombiesKilled++;
+                    Quester.LOGGER.info("Zombies killed: " + zombiesKilled);
+                    if (zombiesKilled >= 10) {
+                        QuestZombieHunter.setTriggered(true);
+                    }
                 }
             }
         }
