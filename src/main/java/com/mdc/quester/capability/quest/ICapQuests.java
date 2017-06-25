@@ -19,4 +19,6 @@ public interface ICapQuests extends ICapability {
     boolean addIncompletedQuest(IQuestTemplate quest, EntityPlayerMP player);
 
     void setPlayer(EntityPlayerMP player);
+
+    IQuestTemplate getLastCompletedQuest();
 }

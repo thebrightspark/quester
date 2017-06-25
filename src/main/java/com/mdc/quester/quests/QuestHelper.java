@@ -1,9 +1,11 @@
 package com.mdc.quester.quests;
 
 import com.mdc.quester.capability.quest.ICapQuests;
+import com.mdc.quester.consts.EnumGui;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.player.QuesterCapability;
+import com.mdc.quester.utils.GUIUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class QuestHelper {
@@ -28,6 +30,7 @@ public class QuestHelper {
         if(icap == null) return;
         icap.addCompletedQuest(quest, player);
         QuestData.INSTANCE.setCompletedQuest(quest);
+
     }
 
     public void setIncompleteQuest(IQuestTemplate quest, EntityPlayerMP player){

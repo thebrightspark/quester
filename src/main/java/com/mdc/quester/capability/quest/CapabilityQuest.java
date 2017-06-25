@@ -38,6 +38,11 @@ public class CapabilityQuest implements ICapQuests{
         return questsIncompleted;
     }
 
+    @Override
+    public IQuestTemplate getLastCompletedQuest() {
+        return QuestHelper.INSTANCE.getCompletedQuest();
+    }
+
     public void setCompletedQuests(String name){
         this.questsCompleted.clear();
         IQuestTemplate quest = QuestData.INSTANCE.getQuestByName(name);

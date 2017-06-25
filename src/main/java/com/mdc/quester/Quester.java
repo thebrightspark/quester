@@ -20,6 +20,9 @@ public class Quester
     @SidedProxy(clientSide=CLIENT_PROXY, serverSide=COMMON_PROXY)
     public static CommonProxy proxy;
 
+    @Mod.Instance
+    public static Quester INSTANCE;
+
     public static final Logger LOGGER = LogManager.getLogger(MODID.toUpperCase());
 
     @Mod.EventHandler

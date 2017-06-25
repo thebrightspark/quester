@@ -3,10 +3,14 @@ package com.mdc.quester.event;
 import com.mdc.quester.Quester;
 import com.mdc.quester.capability.ICapability;
 import com.mdc.quester.capability.quest.ICapQuests;
+import com.mdc.quester.consts.EnumGui;
+import com.mdc.quester.handler.NetworkHandler;
+import com.mdc.quester.messages.MessageGui;
 import com.mdc.quester.templates.IQuestTemplate;
 import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
+import com.mdc.quester.utils.GUIUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -82,6 +86,7 @@ public class EventHandler {
                     QuestHelper.INSTANCE.setCompletedQuest(quest, player);
                     player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.INSTANCE.getCompletedQuest().getName()), true);
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.INSTANCE.getCompletedQuest().getName() + " by: " + player.getName());
+                    GUIUtils.openGuiOnQuestCompleted(player, EnumGui.QUEST_COMPLETED.ordinal(), true, quest.getName());
                 }
             }
         }

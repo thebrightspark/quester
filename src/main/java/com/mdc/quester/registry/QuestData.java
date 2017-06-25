@@ -55,12 +55,12 @@ public class QuestData {
             INSTANCE.incompletedQuests.add(quest);
             Quester.LOGGER.info("\t"+quest.getName());
         }else{
-            Iterator<IQuestTemplate> it = completedQuests.iterator();
+            Iterator<IQuestTemplate> it = incompletedQuests.iterator();
             while(it.hasNext()){
                 IQuestTemplate temp = it.next();
                 if(temp.getName().equals(quest.getName())){
                     try {
-                        throw new Exception("Cannot set quest complete as it is already incompleted: " + quest.getName());
+                        throw new Exception("Cannot set quest incomplete as it is already incompleted: " + quest.getName());
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }

@@ -2,6 +2,7 @@ package com.mdc.quester.handler;
 
 import com.mdc.quester.Quester;
 import com.mdc.quester.messages.MessageCapability;
+import com.mdc.quester.messages.MessageGui;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -15,6 +16,7 @@ public class NetworkHandler {
 
     public static void init(){
         regPacket(MessageCapability.Handler.class, MessageCapability.class, Side.CLIENT);
+        regPacket(MessageGui.Handler.class, MessageGui.class, Side.CLIENT);
     }
 
     private static <REQ extends IMessage, REPLY extends IMessage> void regPacket(Class<? extends IMessageHandler<REQ, REPLY>> handler, Class<REQ> message, Side side){
