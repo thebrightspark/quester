@@ -86,7 +86,8 @@ public class EventHandler {
                     QuestHelper.INSTANCE.setCompletedQuest(quest, player);
                     player.sendStatusMessage(new TextComponentString("Quest complete: " + QuestHelper.INSTANCE.getCompletedQuest().getName()), true);
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.INSTANCE.getCompletedQuest().getName() + " by: " + player.getName());
-                    GUIUtils.openGuiOnQuestCompleted(player, EnumGui.QUEST_COMPLETED.ordinal(), true, quest.getName());
+                    RenderingEventHandler.canRender = true;
+                    RenderingEventHandler.nameToRender = quest.getName();
                 }
             }
         }

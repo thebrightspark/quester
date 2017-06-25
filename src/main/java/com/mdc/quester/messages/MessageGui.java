@@ -17,15 +17,14 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.UUID;
 
-@SideOnly(Side.CLIENT)
 public class MessageGui implements IMessage{
     private int guiID;
     private UUID playerUuid;
+
+    public MessageGui(){}
 
     public MessageGui(UUID playerUuid){
         this.playerUuid = playerUuid;
@@ -66,14 +65,14 @@ public class MessageGui implements IMessage{
                             msg1 = new TextComponentTranslation(" [");
                         }
 
-                        TextComponentTranslation questName = new TextComponentTranslation(temp.getName());
+                        /*TextComponentTranslation questName = new TextComponentTranslation(temp.getName());
                         questName.getStyle().setColor(TextFormatting.RED);
                         questName.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 new TextComponentTranslation("message.quest.description")
                                         .appendText(":\n")
                                         .appendSibling(new TextComponentTranslation(temp.getName())
-                                        .appendText("\n"))));
-                        server.getPlayerList().sendMessage(msg1.appendSibling(questName).appendText("]"));
+                                        .appendText("\n"))));*/
+                        server.getPlayerList().sendMessage(msg1.appendText(temp.getName()).appendText(" ]"));
                     }
                 }
             });

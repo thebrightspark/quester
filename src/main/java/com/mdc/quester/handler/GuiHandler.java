@@ -30,13 +30,8 @@ public class GuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if(ID >= 0 && ID < EnumGui.values().length){
             switch(EnumGui.values()[ID]){
-                case QUEST_DISPLAY:
-                    return new QuestCompletedRenderer((EntityPlayerMP)player);
-                case QUEST_PAGE:
-                    return new QuestPageRenderer();
                 case QUEST_COMPLETED:
-                    Quester.LOGGER.info("Rendering Completed Quest Renderer!");
-                    return new QuestCompletedRenderer((EntityPlayerMP)player);
+                    return new QuestCompletedRenderer(player);
             }
         }
         return null;

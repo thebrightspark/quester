@@ -5,6 +5,7 @@ import com.mdc.quester.player.QuesterCapability;
 import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,19 +14,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class QuestCompletedRenderer extends QuestRenderer{
     private static final String LANG = "gui.quest.";
-    private IQuestTemplate quest;
+    private String name;
 
-    public QuestCompletedRenderer(EntityPlayerMP player){
-        super();
-        updateQuest(player);
-        xSize = 192;
-        ySize = 191;
+    public QuestCompletedRenderer(EntityPlayer player){
+        this(player, null);
     }
 
-    public void updateQuest(EntityPlayerMP player){
-        EntityPlayerMP p = player;
-        ICapQuests icap = QuestHelper.INSTANCE.getQuestCapability(p);
-        quest = icap.getLastCompletedQuest();
+    public QuestCompletedRenderer(EntityPlayer player, String name){
+        super();
+        xSize = 192;
+        ySize = 191;
+        this.name = name;
     }
 
     /*private boolean isItemSubmitQuest(){
@@ -42,7 +41,6 @@ public class QuestCompletedRenderer extends QuestRenderer{
 
     @Override
     protected void drawExtraBg() {
-        if(quest == null) return;
         int iconY = (guiTop - 18);
         int iconX = (guiLeft - 18);
         drawTexturedModalRect(guiLeft + 18, guiTop + 18, iconX, iconY, 32, 32);
@@ -50,8 +48,8 @@ public class QuestCompletedRenderer extends QuestRenderer{
 
     @Override
     protected void drawText() {
-        if(quest == null) return;
-        wrapText(quest.getName(), 52 + guiLeft, 19 + guiTop, 85, 0, false);
+        if(this.name == null) return;
+        wrapText(name, 52 + guiLeft, 19 + guiTop, 85, 0, false);
         wrapText("Completed!", 17 + guiLeft, 54 + guiTop, 160, 0, false);
     }
 }
