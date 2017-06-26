@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import static com.mdc.quester.utils.NBTUtils.*;
 
@@ -42,6 +43,11 @@ public class QuestGetWood implements IQuestTemplate<QuestGetWood> {
     @Override
     public void resetQuest() {
         isTriggered = false;
+    }
+
+    @Override
+    public ItemStack getDisplayIcon() {
+        return new ItemStack(Item.getItemFromBlock(Blocks.LOG));
     }
 
     @Override

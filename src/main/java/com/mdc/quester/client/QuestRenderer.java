@@ -16,19 +16,14 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class QuestRenderer extends GuiScreen {
-    protected static ResourceLocation guiImage;
+    public static ResourceLocation guiImage;
     protected int xSize = 176;
     protected int ySize = 168;
     protected int guiLeft, guiTop;
 
-    public QuestRenderer(){
-        guiImage = new ResourceLocation("textures/gui/advancements/backgrounds/adventure.png");
-    }
-
     @Override
     public void initGui() {
-        guiLeft = (width - xSize) / 2;
-        guiTop = (height - ySize) / 2;
+        guiImage = new ResourceLocation("textures/gui/advancements/window.png");
     }
 
     @Override
@@ -37,7 +32,7 @@ public class QuestRenderer extends GuiScreen {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         mc.getTextureManager().bindTexture(guiImage);
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, mc.displayWidth / 4, mc.displayHeight / 4);
         drawExtraBg();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -53,7 +48,7 @@ public class QuestRenderer extends GuiScreen {
 
     protected void drawExtraBg(){}
 
-    protected void drawText(){}
+    public void drawText(){}
 
     protected void drawTooltips(List<String> tooltip, int mouseX, int mouseY){}
 

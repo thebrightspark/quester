@@ -1,11 +1,12 @@
 package com.mdc.quester.templates;
 
-import com.mdc.quester.Quester;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import com.mdc.quester.utils.NBTUtils;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 /**
  * When creating a new quest, implement this into a new class and place the class name into the type parameter.<br>
@@ -90,4 +91,6 @@ public interface IQuestTemplate<T> {
      * @author Alex Couch
      */
     void resetQuest();
+
+    ItemStack getDisplayIcon();
 }

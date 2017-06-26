@@ -2,9 +2,12 @@ package com.mdc.test;
 
 import com.mdc.quester.templates.IQuestTemplate;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 public class QuestGetCoal implements IQuestTemplate<QuestGetCoal>{
     private static boolean isTriggered = false;
@@ -26,6 +29,11 @@ public class QuestGetCoal implements IQuestTemplate<QuestGetCoal>{
         if(comp.hasKey("progress")){
             isTriggered = Boolean.getBoolean(comp.getString("progress"));
         }
+    }
+
+    @Override
+    public ItemStack getDisplayIcon() {
+        return new ItemStack(Items.COAL);
     }
 
     @Override

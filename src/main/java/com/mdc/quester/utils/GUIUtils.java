@@ -4,8 +4,10 @@ import com.mdc.quester.Quester;
 import com.mdc.quester.client.QuestCompletedRenderer;
 import com.mdc.quester.handler.NetworkHandler;
 import com.mdc.quester.messages.MessageGui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 
 public class GUIUtils {
 
@@ -17,8 +19,8 @@ public class GUIUtils {
         }
     }
 
-    public static void showQuestOverlay(EntityPlayer player, String name){
-        new QuestCompletedRenderer(player, name);
+    public static void showQuestOverlay(String name, ItemStack stack){
+        new QuestCompletedRenderer(Minecraft.getMinecraft(), name, stack).initGui();
     }
 
     private static void sendChange(EntityPlayerMP player){

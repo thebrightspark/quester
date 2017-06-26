@@ -6,8 +6,12 @@ import com.mdc.quester.quests.QuestHelper;
 import com.mdc.quester.registry.QuestData;
 import com.mdc.quester.templates.IQuestTemplate;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -15,28 +19,41 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class QuestCompletedRenderer extends QuestRenderer{
     private static final String LANG = "gui.quest.";
     private String name;
+    private ItemStack displayIcon;
 
-    public QuestCompletedRenderer(EntityPlayer player){
-        this(player, null);
+    public QuestCompletedRenderer(Minecraft mc) {
+        this(mc, null, ItemStack.EMPTY);
     }
 
-    public QuestCompletedRenderer(EntityPlayer player, String name){
+    public QuestCompletedRenderer(Minecraft mc, String name, ItemStack displayIcon){
         super();
         xSize = 192;
         ySize = 191;
         this.name = name;
+        this.mc = mc;
+        this.fontRendererObj = mc.fontRendererObj;
+        this.displayIcon = displayIcon;
     }
-
-    /*private boolean isItemSubmitQuest(){
-        for(IQuestTemplate temp : QuestData.INSTANCE.completedQuests) {
-            return quest != null && quest.getName().equals(temp.getName());
-        }
-        return false;
-    }*/
 
     @Override
     public void initGui() {
-        super.initGui();
+        guiImage = new ResourceLocation("textures/gui/toasts.png");
+        mc.getTextureManager().bindTexture(guiImage);
+        drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 95, this.xSize, this.ySize);
+        this.mc.getRenderItem().renderItemIntoGUI(displayIcon, this.guiLeft + 10, this.guiTop + 10);
+        drawText();
+    }
+
+    public QuestCompletedRenderer setLocation(int x, int y){
+        this.guiLeft = x;
+        this.guiTop = y;
+        return this;
+    }
+
+    public QuestCompletedRenderer setSize(int x, int y){
+        this.xSize = x;
+        this.ySize = y;
+        return this;
     }
 
     @Override
@@ -47,9 +64,8 @@ public class QuestCompletedRenderer extends QuestRenderer{
     }
 
     @Override
-    protected void drawText() {
+    public void drawText() {
         if(this.name == null) return;
-        wrapText(name, 52 + guiLeft, 19 + guiTop, 85, 0, false);
-        wrapText("Completed!", 17 + guiLeft, 54 + guiTop, 160, 0, false);
+        this.drawCenteredString(name + " " + TextFormatting.GREEN + "completed!", guiLeft + fontRendererObj.getStringWidth(name) + (xSize/2) - 20, guiTop + (ySize/3) + 3, 0xaaaaaa);
     }
 }

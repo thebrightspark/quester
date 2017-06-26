@@ -14,6 +14,8 @@ import com.mdc.quester.utils.GUIUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -53,7 +55,7 @@ public class EventHandler {
             EntityPlayerMP player = (EntityPlayerMP)event.getEntity();
             ICapQuests icap = QuestHelper.INSTANCE.getQuestCapability(player);
             if(icap == null) return;
-            Iterator<IQuestTemplate> iterator = QuestData.INSTANCE.quests.iterator();
+            Iterator<IQuestTemplate> iterator = QuestData.INSTANCE.quests.keySet().iterator();
             while(iterator.hasNext()) {
                 IQuestTemplate quest = iterator.next();
                 if (!icap.hasCompletedQuest(quest)) {
@@ -88,6 +90,7 @@ public class EventHandler {
                     Quester.LOGGER.info("Quest completed: " + QuestHelper.INSTANCE.getCompletedQuest().getName() + " by: " + player.getName());
                     RenderingEventHandler.canRender = true;
                     RenderingEventHandler.nameToRender = quest.getName();
+                    RenderingEventHandler.displayIcon = quest.getDisplayIcon();
                 }
             }
         }
